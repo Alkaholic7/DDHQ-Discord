@@ -1,0 +1,25 @@
+{
+  "name": "ddhq-discord",
+  "version": "1.0.0",
+  "description": "Da Daqg HQ Discord bot with character quiz and role assignment",
+  "type": "module",
+  "main": "src/bot.js",
+  "scripts": {
+    "start": "node src/bot.js",
+    "dev": "nodemon src/bot.js",
+    "deploy:commands": "node scripts/register-commands.js",
+    "extract:quiz": "node scripts/extract-quiz.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5",
+    "pdfjs-dist": "^4.6.82"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
+

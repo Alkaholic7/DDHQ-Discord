@@ -1,0 +1,9 @@
+Application ID: 1421970915805102150
+
+Public Key: 1ae681c2ff9b9e999327d9f14b3f0c6ffffe0eeaa8b9966085abdec5b64fd06c
+
+Discord Token: MTQyMTk3MDkxNTgwNTEwMjE1MA.GMrpXB.3nvK2GadyVaTgGxOFv7kjbmsrLcg5Q_En0MBi8
+
+Server ID: 1388208182094073886
+
+Quiz Channel ID: 1421821101742231595

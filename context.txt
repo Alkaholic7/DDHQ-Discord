@@ -1,0 +1,16 @@
+Hi there!
+
+I need some help trying to configure and allocate points to a sort of questionnaire I will be having on my discord. 
+
+Basically, the idea is to have users join our server and answer a few buzzfeed like questions and towards the end, they will be assigned a certain role based on how often they've picked a certain answer. Mostly A's or Mostly B's you are so and so. 
+
+I tried looking up solutions online and I was told that I should be able to see some sort of column/field to assign XP points to each response but I can't seem to find it when I was on the Edit Answer List
+Image
+I've purchased the VIP premium as well, so I believe I should have all the perms and options available
+Mommy Alka 🖤
+
+ — Yesterday at 19:14
+@Mr.Lucky
+Mr.Lucky — Yesterday at 20:39
+Heh Mommy Alka,  You can setup a role to be rewarded for taking the questionnaire itself witht he "XP & Roles reward" when editing the questionnaire, or you can setup roles to given out based of the "XP" points.  To do it by XP points, you use the "/xp" command and pick "Role rewards".  Then you can "Add role reward" to setup a reward based off a overall XP points you can setup.  The "vp value" option in that "/xp" menu lets you setup how many points are rewarded for anyquestion or any complete questionnaire.  Hopefully those will work out for what you are trying to do!
+

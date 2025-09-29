@@ -1,0 +1,294 @@
+{
+  "questions": [
+    {
+      "prompt": "What’s your ideal Friday night? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "Smoking on the hood of your car, thinking about how gas fees ruined your life. ●"
+        },
+        {
+          "key": "B",
+          "label": "Flexing in front of a mirror while explaining why decentralization is the future... to yourself. ●"
+        },
+        {
+          "key": "C",
+          "label": "Attending a “networking” event for the free cocktails and soft lighting for selfies. ●"
+        },
+        {
+          "key": "D",
+          "label": "Pretending to be busy so no one asks you to hang out. ●"
+        },
+        {
+          "key": "E",
+          "label": "Plotting world domination while quoting Kanye. Loudly. ●"
+        },
+        {
+          "key": "F",
+          "label": "Cracking open a cold one & making a DAO to govern the spotify playlist for your house party."
+        }
+      ]
+    },
+    {
+      "prompt": "Someone calls your favourite NFT a scam. What do you do? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "Send them a “gm” DM laced with your mom jokes. ●"
+        },
+        {
+          "key": "B",
+          "label": "Laugh awkwardly, then hit them with “you don’t get it, bruh.” ●"
+        },
+        {
+          "key": "C",
+          "label": "Photoshop your PFP onto a $10 bill and tweet, “Stay mad, broke boi.” ●"
+        },
+        {
+          "key": "D",
+          "label": "Ghost them so hard they start questioning their existence. ●"
+        },
+        {
+          "key": "E",
+          "label": "Hire a bot army to follow them so X bans their account. ●"
+        },
+        {
+          "key": "F",
+          "label": "Start a Twitter Space titled “How to Spot an NPC IRL” and tag them."
+        }
+      ]
+    },
+    {
+      "prompt": "What’s your worst fear? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "Finding out your wallet got rugged while you were taking a nap. ●"
+        },
+        {
+          "key": "B",
+          "label": "People figuring out you don’t actually read whitepapers. ●"
+        },
+        {
+          "key": "C",
+          "label": "Losing an argument on Crypto Twitter. In public. ●"
+        },
+        {
+          "key": "D",
+          "label": "Running out of snacks and emotional bandwidth simultaneously. ●"
+        },
+        {
+          "key": "E",
+          "label": "Someone’s already using your AGW username. ●"
+        },
+        {
+          "key": "F",
+          "label": "Posting a leak in the wrong group chat... and accidentally doxxing myself."
+        }
+      ]
+    },
+    {
+      "prompt": "You just won the lottery. What’s your first move? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "Buy a Lambo and tweet “Not financial advice.” ●"
+        },
+        {
+          "key": "B",
+          "label": "Launch a new token called $BDE —Big Dawg Energy. ●"
+        },
+        {
+          "key": "C",
+          "label": "Hire someone to carry your snacks so you can “focus on strategy.” ●"
+        },
+        {
+          "key": "D",
+          "label": "Buy an island but forget to tell anyone because you hate social interaction. ●"
+        },
+        {
+          "key": "E",
+          "label": "Make a feature film about your life called “The Wolf of Rug Street.” ●"
+        },
+        {
+          "key": "F",
+          "label": "Buy out an entire chain of coffee shops and rename it Degen Café."
+        }
+      ]
+    },
+    {
+      "prompt": "What’s your vibe? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "Self-aware mess. 60% genius, 40% chaos, 100% can’t be bothered. ●"
+        },
+        {
+          "key": "B",
+          "label": "Alpha energy wrapped in a protein shake. You’re the Dawg of the gym and the chain. ●"
+        },
+        {
+          "key": "C",
+          "label": "Stylish, sharp, and always ready to dunk on someone’s bad taste. ●"
+        },
+        {
+          "key": "D",
+          "label": "Quiet menace. Your silence is louder than any bull market hype. ●"
+        },
+        {
+          "key": "E",
+          "label": "Dramatic AF but in a way people find oddly endearing. You’re the main character. ●"
+        },
+        {
+          "key": "F",
+          "label": "Villain arc meets genius. You’re not here to play; you’re here to own."
+        }
+      ]
+    },
+    {
+      "prompt": "What’s your go-to excuse for being late to a meeting? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "“Gas fees were too high. I had to wait for the dip.” ●"
+        },
+        {
+          "key": "B",
+          "label": "“Sorry, I was hitting the gym. You can’t flex utility without actual flexes.” ●"
+        },
+        {
+          "key": "C",
+          "label": "“Got stuck in traffic... on Discord.” ●"
+        },
+        {
+          "key": "D",
+          "label": "“I wasn’t late; you were just early. Time is a construct.” ●"
+        },
+        {
+          "key": "E",
+          "label": "“My Wi-Fi rug-pulled me mid-mint.” ●"
+        },
+        {
+          "key": "F",
+          "label": "“I was onboarding someone, aka convincing them I’m not in a cult.”"
+        }
+      ]
+    },
+    {
+      "prompt": "What’s the first thing you do after waking up? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "Check if ETH is up, down, or emotionally unstable. ●"
+        },
+        {
+          "key": "B",
+          "label": "Post a gym selfie captioned “Rise & Grind, Degens.” ●"
+        },
+        {
+          "key": "C",
+          "label": "Scroll Twitter for alpha leaks while sipping overpriced cold brew. ●"
+        },
+        {
+          "key": "D",
+          "label": "Stare at the ceiling, wondering why you agreed to exist today. ●"
+        },
+        {
+          "key": "E",
+          "label": "Announce a DAO proposal in your group chat just to cause chaos. ●"
+        },
+        {
+          "key": "F",
+          "label": "Open your AGW, even though you know your holdings are still wrecked."
+        }
+      ]
+    },
+    {
+      "prompt": "What’s your response to someone saying “Web3 is dead”? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "“Nah, it’s just sleeping. Like me during every bull market.” ●"
+        },
+        {
+          "key": "B",
+          "label": "“Funny, that’s what they said about Bitcoin in 2017.” ●"
+        },
+        {
+          "key": "C",
+          "label": "“Dead? You mean thriving, but okay, Boomer.” ●"
+        },
+        {
+          "key": "D",
+          "label": "[leaves convo without explanation] ●"
+        },
+        {
+          "key": "E",
+          "label": "“Web3 isn’t dead; it just rugged you. ” ●"
+        },
+        {
+          "key": "F",
+          "label": "“Tell me you don’t own NFTs without telling me.”"
+        }
+      ]
+    },
+    {
+      "prompt": "Your wallet gets hacked. What’s your coping mechanism? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "Tweet “brb crying” while secretly planning revenge. ●"
+        },
+        {
+          "key": "B",
+          "label": "Bench press the pain away. Wallet drained, but you still have gains. ●"
+        },
+        {
+          "key": "C",
+          "label": "Photoshop a new PFP and call it “community-owned.” ●"
+        },
+        {
+          "key": "D",
+          "label": "Shrug it off because you only keep the good stuff in cold storage. ●"
+        },
+        {
+          "key": "E",
+          "label": "Host a Space titled “How to Recover From Rugging Yourself.” ●"
+        },
+        {
+          "key": "F",
+          "label": "Keep annoying ZachXBT on X."
+        }
+      ]
+    },
+    {
+      "prompt": "What’s your biggest flex? ●",
+      "options": [
+        {
+          "key": "A",
+          "label": "I minted my PFP at 0.05 ETH. You bought it at 5 ETH. ●"
+        },
+        {
+          "key": "B",
+          "label": "I can name five Layer 1 blockchains and lift all of them. ●"
+        },
+        {
+          "key": "C",
+          "label": "My PFP is more fashionable than your entire wardrobe. ●"
+        },
+        {
+          "key": "D",
+          "label": "I’ve never FOMO’d. Not once. Not even in high school. ●"
+        },
+        {
+          "key": "E",
+          "label": "I’ve flipped more haters than actual projects. ●"
+        },
+        {
+          "key": "F",
+          "label": "I sold at the top and still complain about not selling earlier. Results: Mostly A’s: Eric Da Dawg: Alpha of Da Dawg Pack - The Chillest Legend Ever. Personality: Eric is the friend who always vibes, never stresses, and somehow makes you feel cooler just by being in his orbit. He’s the glue of the group—balancing chaotic energy, awkward silences, and emotional meltdowns with a well-timed joke or a deep life observation that sounds profound (even if it’s about pizza). Eric has mastered the art of looking like he’s doing nothing while somehow being the most dependable person around. He’s the dude who rolls up late but knows exactly what you need to hear. Famous Quote: “Bro, just chill. The universe has a plan... or whatever. Pass the penjamin.” Role in the Friend Group: The chill mediator who always keeps the peace. Mostly B’s: Bullet Da Bulldawg: Pushin P - Power, Presence, and Protein. Personality: Bullet is all about action. He’s that friend who talks loud, lives louder, and turns every situation into a high-energy spectacle. Whether it’s revving engines, yelling at sports games, or flexing biceps in the mirror, Bullet’s energy is contagious. Sure, he’s got a short fuse, but his bark is worse than his bite (mostly). At his core, Bullet is a big softie with a giant heart, ready to throw hands—or his wallet—if anyone messes with his pack. Famous Quote: “Life’s simple: you lift heavy, you drive fast, and you don’t let anyone disrespect your protein shake.” Role in the Friend Group: The chaotic hype man who’ll fight anyone for you. Mostly C’s: Elli Da Dawggette: Ws in The Chat - Weights, Wits, and Wild Fits. Personality: Elli walks into a room and owns it. She’s the person everyone wants to befriend but is secretly too intimidated to approach. Stylish and confident, she knows her worth and doesn’t let anyone forget it. But don’t mistake her for just another glam queen—Elli’s got the brains to match. She’ll roast you for your bad outfit and beat you in a debate, all while repping flawless gym form. She’s the friend hyping you up, dragging you to the gym, and dropping wisdom bombs in your DMs. Famous Quote: “Did you just mansplain to me? That’s adorable. Now, watch me deadlift your ego.” Role in the Friend Group: The motivator who pushes you to level up. Mostly D’s: Raven Da Hellcat: Top-Cat of Da Hellcats - A Badass Enigma, Zero F’s Given. Personality: Raven is the friend you don’t fully understand but can’t stop obsessing over. She’s sarcastic, unbothered, and always seems like she knows something you don’t. People assume she’s too aloof to care, but the truth is, she’s quietly keeping tabs on everything—and will swoop in to save the day when you least expect it. If she’s teasing you, congrats, she likes you. Her vibe is equal parts mysterious cool girl and unexpected team mom , but don’t expect her to admit it. Famous Quote: “Don’t take life too seriously; no one’s getting out alive anyway.” Role in the Friend Group: The sarcastic realist who secretly has your back. Mostly E’s: Bobcat Da Hellcat: The Orange Car - Mischief With a Side of Drama. Personality: Bobcat is the drama. He’s loud, flamboyant, and loves nothing more than stirring the pot. But beneath the flashy exterior lies someone who craves connection (even if he’d rather die than admit it). He’s a showstopper, always dressed to impress and ready to flex his latest obsession. Sure, he’s extra—but that’s why everyone loves him. Whether he’s hyping himself up or roasting his friends, Bobcat brings the spice to every situation. Famous Quote: “Subtlety is for people who hate fun. Now, where’s my spotlight?” Role in the Friend Group: The drama queen who makes everything 10x funnier. Mostly F’s: Luna Da Hellcat: Grey Hatting On-Chain One Bong Rip at a Time. Personality: Luna is the wild card, the genius hacker who’s always ten steps ahead of everyone else. She’s your chaotic but brilliant friend who casually breaks systems while figuring out the meaning of life at 2 a.m. Luna thrives on curiosity and chaos, blending confidence and dry humor with an almost spooky ability to solve problems. She keeps people at arm’s length (trust issues, duh) but secretly enjoys the company. If you’re stuck, she’s your go-to—but expect her to troll you about it first. Famous Quote: “I could fix your life... but where’s the fun in that?” Role in the Friend Group: The brains of the operation, running on snacks and genius."
+        }
+      ]
+    }
+  ]
+}
