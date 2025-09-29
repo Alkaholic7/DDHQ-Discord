@@ -1,0 +1,11 @@
+{
+  "characters": [
+    { "id": "eric_da_dawg", "name": "Eric Da Dawg", "roleId": "1390066229665857536" },
+    { "id": "bullet_da_bulldawg", "name": "Bullet Da Bulldawg", "roleId": "1390066504997015592" },
+    { "id": "ellie_da_dawggette", "name": "Ellie Da Dawggette", "roleId": "1390067273108029440" },
+    { "id": "raven_da_hellcat", "name": "Raven Da Hellcat", "roleId": "1390067173686513717" },
+    { "id": "bobcat_da_hellcat", "name": "Bobcat Da Hellcat", "roleId": "1390067107315712062" },
+    { "id": "luna_da_hellcat", "name": "Luna Da Hellcat", "roleId": "1390066998167207946" }
+  ]
+}
+
