@@ -24,6 +24,11 @@ export function getDb() {
   return {};
 }
 
+export function getUserProgress(_db, userId) {
+  const store = readStore();
+  return store.users[userId] || null;
+}
+
 export function upsertUserProgress(_db, userId, fields) {
   const store = readStore();
   const current = store.users[userId] || { user_id: userId };
@@ -44,6 +49,21 @@ export function getAnswers(_db, userId) {
   const store = readStore();
   const userAnswers = store.answers[userId] || {};
   return Object.keys(userAnswers).sort((a,b)=>Number(a)-Number(b)).map(k => ({ question_index: Number(k), option_key: userAnswers[k].option_key }));
+}
+
+export function getActiveStartMessageForChannel(_db, channelId) {
+  const store = readStore();
+  const map = (store.meta && store.meta.activeStartMessages) ? store.meta.activeStartMessages : {};
+  return map[channelId] || null;
+}
+
+export function setActiveStartMessageForChannel(_db, channelId, messageId) {
+  const store = readStore();
+  if (!store.meta) store.meta = {};
+  if (!store.meta.activeStartMessages) store.meta.activeStartMessages = {};
+  store.meta.activeStartMessages[channelId] = messageId;
+  writeStore(store);
+  return messageId;
 }
 
 
