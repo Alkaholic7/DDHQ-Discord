@@ -1,0 +1,25 @@
+services:
+  - type: worker
+    name: ddsurvey-bot
+    env: docker
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    plan: starter
+    disk:
+      name: data
+      mountPath: /usr/src/app/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Set these in Render dashboard or in a private render.yaml if desired
+      - key: DISCORD_TOKEN
+        sync: false
+      - key: CLIENT_ID
+        sync: false
+      - key: GUILD_ID
+        sync: false
+      - key: QUIZ_CHANNEL_ID
+        sync: false
+      - key: ALERT_CHANNEL_ID
+        sync: false

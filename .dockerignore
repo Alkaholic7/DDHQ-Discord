@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+.DS_Store
+.git
+.gitignore
+bot.out.log
+bot.err.log
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.pdf
+.env
+.data
+
+

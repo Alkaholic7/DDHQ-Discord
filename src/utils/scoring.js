@@ -4,6 +4,7 @@ import path from 'path';
 const ROOT = process.cwd();
 const QUIZ_PATH = path.join(ROOT, 'src', 'config', 'quiz.json');
 const CHAR_PATH = path.join(ROOT, 'src', 'config', 'characters.json');
+const RESULTS_PATH = path.join(ROOT, 'src', 'config', 'results.json');
 
 export function loadQuiz() {
   if (!fs.existsSync(QUIZ_PATH)) throw new Error('src/config/quiz.json not found. Run npm run extract:quiz or create manually.');
@@ -13,6 +14,15 @@ export function loadQuiz() {
 export function loadCharacters() {
   if (!fs.existsSync(CHAR_PATH)) throw new Error('src/config/characters.json not found.');
   return JSON.parse(fs.readFileSync(CHAR_PATH, 'utf-8')).characters;
+}
+
+export function loadResults() {
+  if (!fs.existsSync(RESULTS_PATH)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(RESULTS_PATH, 'utf-8'));
+  } catch {
+    return null;
+  }
 }
 
 // Map option keys (A-F) to character ids. Adjust after PDF parsing/validation.
