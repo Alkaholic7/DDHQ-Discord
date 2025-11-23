@@ -1,6 +1,8 @@
 import 'dotenv/config';
+import dns from 'dns';
+try { dns.setDefaultResultOrder('ipv4first'); } catch {}
 import { Client, GatewayIntentBits, Partials, ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, StringSelectMenuBuilder, Events, SlashCommandBuilder, Routes, REST, PermissionFlagsBits, AttachmentBuilder, ActivityType } from 'discord.js';
-import { getDb, upsertUserProgress, saveAnswer, getAnswers, getUserProgress, getActiveStartMessageForChannel, setActiveStartMessageForChannel } from './db/index.js';
+import { getDb, upsertUserProgress, saveAnswer, getAnswers, getUserProgress, getActiveStartMessageForChannel, setActiveStartMessageForChannel, clearUserData } from './db/index.js';
 import { loadQuiz, loadCharacters, scoreAnswers, loadResults } from './utils/scoring.js';
 import fs from 'fs';
 import path from 'path';
@@ -86,35 +88,7 @@ async function enforceNoRetake(interaction) {
   const member = await getGuildMemberSafe(interaction);
   const char = getAssignedCharacterForMember(member);
   if (!char) {
-    // Fallback: check DB completion flag
-    try {
-      const progress = getUserProgress(db, interaction.user.id);
-      if (!progress) return false;
-      if (progress.completed_at || progress.top_character_id) {
-        const matchedName = CHARACTERS.find(c => c.id === progress.top_character_id)?.name;
-        const payload = {
-          content: `You already completed the quiz${matchedName ? ` and matched ${matchedName}` : ''}. Retakes are disabled. If this seems wrong, contact staff.`,
-          embeds: [],
-          components: []
-        };
-        try {
-          if (interaction.isStringSelectMenu?.() || interaction.isButton?.()) {
-            if (interaction.deferred || interaction.replied) {
-              await interaction.editReply(payload);
-            } else {
-              await interaction.update(payload);
-            }
-          } else {
-            if (interaction.deferred || interaction.replied) {
-              await interaction.editReply(payload);
-            } else {
-              await interaction.reply({ ephemeral: true, ...payload });
-            }
-          }
-        } catch {}
-        return true;
-      }
-    } catch {}
+    // Allow retake if the member currently has no character role (e.g., rejoined)
     return false;
   }
   const payload = {
@@ -217,6 +191,30 @@ client.once(Events.ClientReady, c => {
     maintain().catch(() => {});
     setInterval(() => { maintain().catch(() => {}); }, 5 * 60_000);
   } catch {}
+
+  // Connectivity watchdog: alert if Discord REST connectivity repeatedly fails
+  try {
+    let connectivityFailures = 0;
+    let lastConnectivityAlert = 0;
+    const guildId = process.env.GUILD_ID;
+    const checkConnectivity = async () => {
+      try {
+        if (!guildId) return;
+        // Lightweight fetch; if it throws, we likely lost REST connectivity
+        await c.guilds.fetch(guildId);
+        connectivityFailures = 0;
+      } catch (e) {
+        connectivityFailures += 1;
+        const now = Date.now();
+        // Alert on 2nd consecutive failure and at most once every 10 minutes
+        if (connectivityFailures >= 2 && now - lastConnectivityAlert > 10 * 60_000) {
+          lastConnectivityAlert = now;
+          try { await sendAlert(`⚠️ Connectivity check failing (${connectivityFailures}x). The bot may not receive interactions. Investigating...`); } catch {}
+        }
+      }
+    };
+    setInterval(() => { checkConnectivity().catch(() => {}); }, 120_000);
+  } catch {}
 });
 
 client.on(Events.Error, (e) => { try { console.error('[Gateway Error]', e?.message); sendAlert(`⚠️ Gateway error: ${String(e?.message || e).slice(0, 300)}`); } catch {} });
@@ -232,13 +230,26 @@ process.on('uncaughtException', (err) => { try { console.error('[uncaughtExcepti
 // Simple watchdog log so we know the loop is alive
 setInterval(() => { try { console.log('[watchdog] alive', Date.now()); } catch {} }, 60_000);
 
+client.on(Events.GuildMemberRemove, async member => {
+  try {
+    // When a member leaves, clear their quiz state so a rejoin can take the quiz again
+    clearUserData(db, member.id);
+  } catch {}
+});
+
 client.on(Events.GuildMemberAdd, async member => {
+  try {
+    // Allow rejoiners to retake quiz: clear any persisted progress/answers
+    clearUserData(db, member.id);
+  } catch {}
   if (process.env.AUTO_WELCOME !== 'true') return;
   const channelId = process.env.QUIZ_CHANNEL_ID;
   if (!channelId) return;
   try {
     const channel = member.guild.channels.cache.get(channelId) || await member.guild.channels.fetch(channelId).catch(() => null);
     if (!channel) return;
+    // Ensure channel is visible to the rejoined member (remove stale overwrite if present)
+    try { await channel.permissionOverwrites?.delete?.(member.id).catch(() => {}); } catch {}
     const welcome = process.env.WELCOME_MESSAGE || 'Welcome! Take the quiz to get your role.';
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId('quiz:start').setLabel('Start Character Quiz').setStyle(ButtonStyle.Primary)
@@ -373,6 +384,119 @@ client.on(Events.InteractionCreate, async interaction => {
         const lines = checks.map(c => `${c.allowed ? '✅' : '❌'} ${c.name}`).join('\n');
         await interaction.editReply({ ephemeral: true, embeds: [new EmbedBuilder().setTitle('Permission Check').setDescription(`Channel: ${target}
 ${lines}`)] });
+      } else if (interaction.commandName === 'check-quiz-channel') {
+        try {
+          const member = interaction.member;
+          if (!member.permissions.has(PermissionFlagsBits.ManageGuild) && !member.permissions.has(PermissionFlagsBits.ManageChannels)) {
+            await interaction.editReply({ content: 'You need Manage Guild or Manage Channels permission to use this.' });
+            return;
+          }
+          // Immediate ack to stop the spinner
+          try { await interaction.editReply({ content: 'Checking channel…' }); } catch {}
+          const target = interaction.options.getChannel('channel') ?? interaction.channel;
+          // Use a safe resolvable for permission checks
+          let me = interaction.guild?.members?.me ?? null;
+          if (!me) {
+            try { me = await interaction.guild.members.fetchMe(); } catch { me = null; }
+          }
+          const quizChannelId = process.env.QUIZ_CHANNEL_ID;
+          const isConfiguredChannel = quizChannelId ? (target?.id === quizChannelId) : false;
+          const perms = target?.permissionsFor?.(me || client.user);
+          const required = [
+            'ViewChannel',
+            'SendMessages',
+            'EmbedLinks',
+            'ReadMessageHistory'
+          ];
+          const optional = [
+            'UseExternalEmojis',
+            'AddReactions',
+            'ManageMessages',
+            'ManageChannels'
+          ];
+          const lines = [];
+          lines.push(`${isConfiguredChannel ? '✅' : '❌'} Matches QUIZ_CHANNEL_ID (${quizChannelId || 'not set'})`);
+          for (const name of required) lines.push(`${perms?.has(PermissionFlagsBits[name]) ? '✅' : '❌'} ${name}`);
+          for (const name of optional) lines.push(`${perms?.has(PermissionFlagsBits[name]) ? 'ℹ️' : '⚠️'} ${name} (optional)`);
+          // Check for presence of Start button in the last 50 messages with timeout and safety
+          let startButtonPresent = false;
+          try {
+            const canFetch = target?.isTextBased?.() && target.messages && typeof target.messages.fetch === 'function';
+            if (canFetch) {
+              const fetchWithTimeout = Promise.race([
+                target.messages.fetch({ limit: 50 }),
+                new Promise(res => setTimeout(() => res(null), 1500))
+              ]);
+              const recent = await fetchWithTimeout;
+              startButtonPresent = !!recent?.find?.(m => m.author.id === client.user.id && m.components?.some(r => r.components?.some(c => c.customId === 'quiz:start')));
+            }
+          } catch {}
+          lines.push(`${startButtonPresent ? '✅' : '❌'} Start button present in recent messages`);
+          const canEmbed = perms?.has(PermissionFlagsBits.EmbedLinks);
+          if (canEmbed) {
+            await interaction.editReply({ embeds: [new EmbedBuilder().setTitle('Quiz Channel Check').setDescription(lines.join('\n'))] });
+          } else {
+            await interaction.editReply({ content: lines.join('\n') });
+          }
+        } catch (e) {
+          await interaction.editReply({ content: 'Check failed. Try again or ensure I have permission to view this channel.' });
+        }
+      } else if (interaction.commandName === 'bot-info') {
+        const member = interaction.member;
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild) && !member.permissions.has(PermissionFlagsBits.ManageChannels)) {
+          await interaction.editReply({ content: 'You need Manage Guild or Manage Channels permission to use this.' });
+          return;
+        }
+        const cwd = process.cwd();
+        let pkg = null;
+        try { pkg = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')); } catch {}
+        const mainPath = path.join(process.cwd(), 'src', 'bot.js');
+        const files = [
+          { label: 'src/bot.js', p: mainPath },
+          { label: 'src/utils/scoring.js', p: path.join(process.cwd(), 'src', 'utils', 'scoring.js') },
+          { label: 'src/db/index.js', p: path.join(process.cwd(), 'src', 'db', 'index.js') },
+          { label: 'scripts/register-commands.js', p: path.join(process.cwd(), 'scripts', 'register-commands.js') }
+        ];
+        const ts = [];
+        for (const f of files) {
+          try {
+            const st = fs.statSync(f.p);
+            ts.push(`${f.label}: mtime ${new Date(st.mtimeMs).toISOString()}`);
+          } catch {
+            ts.push(`${f.label}: not found`);
+          }
+        }
+        const lines = [
+          `cwd: ${cwd}`,
+          `version: ${pkg?.version || 'unknown'}`,
+          ...ts
+        ];
+        await interaction.editReply({ embeds: [new EmbedBuilder().setTitle('Bot Info').setDescription(lines.join('\n'))], ephemeral: true });
+      } else if (interaction.commandName === 'reset-quiz') {
+        const member = interaction.member;
+        if (!member.permissions.has(PermissionFlagsBits.ManageGuild) && !member.permissions.has(PermissionFlagsBits.ManageChannels)) {
+          await interaction.editReply({ content: 'You need Manage Guild or Manage Channels permission to use this.' });
+          return;
+        }
+        const target = interaction.options.getUser('user');
+        if (!target) {
+          await interaction.editReply({ content: 'Please specify a user.' });
+          return;
+        }
+        try {
+          clearUserData(db, target.id);
+          // Remove any stale channel overwrite so they can see the quiz channel again
+          const channelId = process.env.QUIZ_CHANNEL_ID;
+          if (channelId) {
+            const ch = interaction.guild.channels.cache.get(channelId) || await interaction.guild.channels.fetch(channelId).catch(() => null);
+            if (ch && ch.permissionOverwrites) {
+              try { await ch.permissionOverwrites.delete(target.id).catch(() => {}); } catch {}
+            }
+          }
+          await interaction.editReply({ content: `Reset quiz data for <@${target.id}>.` });
+        } catch (e) {
+          await interaction.editReply({ content: 'Failed to reset user data. Check logs and permissions.' });
+        }
       } else if (interaction.commandName === 'ping') {
         await interaction.editReply({ ephemeral: true, content: 'pong' });
       } else if (interaction.commandName === 'health') {
@@ -386,8 +510,12 @@ ${lines}`)] });
         return;
       }
       if (interaction.customId === 'quiz:start') {
-        // Start quiz with a single ephemeral message
-        await ensureAck(interaction);
+        // Start quiz with a single ephemeral message (avoid updating public message)
+        try {
+          if (!interaction.deferred && !interaction.replied) {
+            await interaction.reply({ content: 'Loading quiz...', flags: 64 });
+          }
+        } catch {}
         // Only accept clicks on the latest Start button in this channel
         try {
           let activeId = getActiveStartMessageForChannel(db, interaction.channel?.id);
@@ -397,16 +525,16 @@ ${lines}`)] });
           }
           const messageId = interaction.message?.id;
           if (activeId && messageId && activeId !== messageId) {
-            try { await interaction.editReply({ content: 'This Start button is no longer active. Please use the most recent one in this channel.' }); } catch { try { await interaction.reply({ content: 'This Start button is no longer active. Please use the most recent one in this channel.', flags: 64 }); } catch {} }
+            try { await interaction.editReply({ content: 'This Start button is no longer active. Please use the most recent one in this channel.' }); } catch { try { if (!interaction.replied) await interaction.reply({ content: 'This Start button is no longer active. Please use the most recent one in this channel.', flags: 64 }); } catch {} }
             return;
           }
         } catch {}
         // Guard: prevent users with any character role from starting
         if (await enforceNoRetake(interaction)) return;
         try {
-          await renderQuestion(interaction, 0, true);
+        await renderQuestion(interaction, 0, true);
         } catch (e) {
-          try { await interaction.editReply({ content: 'Something went wrong displaying the first question. Please try again.' }); } catch { try { await interaction.reply({ content: 'Something went wrong displaying the first question. Please try again.', flags: 64 }); } catch {} }
+          try { await interaction.editReply({ content: 'Something went wrong displaying the first question. Please try again.' }); } catch { try { if (!interaction.replied) await interaction.reply({ content: 'Something went wrong displaying the first question. Please try again.', flags: 64 }); } catch {} }
           return;
         }
       } else if (interaction.customId.startsWith('quiz:next:')) {
@@ -583,19 +711,15 @@ async function renderQuestion(interaction, index, first) {
     return;
   }
   if (interaction.isStringSelectMenu() || interaction.isButton()) {
-    // If we've already deferred or replied to this component interaction, edit the reply; otherwise update
+    // Only edit the user's ephemeral reply or follow up ephemerally; never update the public message
     if (interaction.deferred || interaction.replied) {
       try { await interaction.editReply(payload); } catch (e) {
         try { console.error('[QUIZ] editReply failed in renderQuestion:', e?.message); } catch {}
         try { await interaction.followUp({ ephemeral: true, ...payload }); } catch {}
       }
     } else {
-      try { await interaction.update(payload); } catch (e) {
-        try { console.error('[QUIZ] update failed in renderQuestion, retrying editReply:', e?.message); } catch {}
-        try { await interaction.editReply(payload); } catch (e2) {
-          try { console.error('[QUIZ] editReply fallback failed in renderQuestion:', e2?.message); } catch {}
-          try { await interaction.followUp({ ephemeral: true, ...payload }); } catch {}
-        }
+      try { await interaction.reply({ ephemeral: true, ...payload }); } catch (e) {
+        try { console.error('[QUIZ] reply failed in renderQuestion:', e?.message); } catch {}
       }
     }
   } else {
@@ -676,12 +800,9 @@ async function finalizeQuiz(interaction) {
         try { await interaction.followUp({ ephemeral: true, ...payload }); } catch {}
       });
     } else {
-      await interaction.update(payload).catch(async e => {
-        try { console.error('[QUIZ] finalize update failed, trying editReply:', e?.message); } catch {}
-        try { await interaction.editReply(payload); } catch (e2) {
-          try { console.error('[QUIZ] finalize editReply fallback failed:', e2?.message); } catch {}
-          try { await interaction.followUp({ ephemeral: true, ...payload }); } catch {}
-        }
+      // Never update the public message; reply ephemerally instead
+      await interaction.reply({ ephemeral: true, ...payload }).catch(async e => {
+        try { console.error('[QUIZ] finalize reply failed (component):', e?.message); } catch {}
       });
     }
   } else if (interaction.deferred || interaction.replied) {
@@ -717,6 +838,20 @@ async function registerCommandsDev() {
       .setName('check-perms')
       .setDescription('Check my permissions in a channel')
       .addChannelOption(opt => opt.setName('channel').setDescription('Channel to check').setRequired(false))
+    ,
+    new SlashCommandBuilder()
+      .setName('check-quiz-channel')
+      .setDescription('Admin: verify quiz channel setup and permissions')
+      .addChannelOption(opt => opt.setName('channel').setDescription('Channel to verify').setRequired(false))
+    ,
+    new SlashCommandBuilder()
+      .setName('bot-info')
+      .setDescription('Admin: show running bot info (cwd, entry, version, timestamps)')
+    ,
+    new SlashCommandBuilder()
+      .setName('reset-quiz')
+      .setDescription('Admin: reset a user\'s stored quiz data')
+      .addUserOption(opt => opt.setName('user').setDescription('User to reset').setRequired(true))
     ,
     new SlashCommandBuilder().setName('ping').setDescription('Health check'),
     new SlashCommandBuilder().setName('health').setDescription('Bot health and uptime')

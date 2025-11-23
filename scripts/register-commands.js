@@ -18,6 +18,20 @@ async function main() {
       .setDescription('Check my permissions in a channel')
       .addChannelOption(opt => opt.setName('channel').setDescription('Channel to check').setRequired(false))
     ,
+    new SlashCommandBuilder()
+      .setName('check-quiz-channel')
+      .setDescription('Admin: verify quiz channel setup and permissions')
+      .addChannelOption(opt => opt.setName('channel').setDescription('Channel to verify').setRequired(false))
+    ,
+    new SlashCommandBuilder()
+      .setName('bot-info')
+      .setDescription('Admin: show running bot info (cwd, entry, version, timestamps)')
+    ,
+    new SlashCommandBuilder()
+      .setName('reset-quiz')
+      .setDescription('Admin: reset a user\'s stored quiz data')
+      .addUserOption(opt => opt.setName('user').setDescription('User to reset').setRequired(true))
+    ,
     new SlashCommandBuilder().setName('ping').setDescription('Health check'),
     new SlashCommandBuilder().setName('health').setDescription('Bot health and uptime')
   ].map(c => c.toJSON());

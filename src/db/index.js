@@ -66,4 +66,11 @@ export function setActiveStartMessageForChannel(_db, channelId, messageId) {
   return messageId;
 }
 
+export function clearUserData(_db, userId) {
+  const store = readStore();
+  if (store.users && store.users[userId]) delete store.users[userId];
+  if (store.answers && store.answers[userId]) delete store.answers[userId];
+  writeStore(store);
+}
+
 
